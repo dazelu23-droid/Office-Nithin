@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agentic AI — Interactive Learning Explorer</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface2: #334155;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent2: #818cf8;
+      --green: #34d399;
+      --border: #475569;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; color: #7dd3fc; }
+    .layout { display: flex; min-height: 100vh; }
+    nav {
+      width: 260px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 1.5rem 1rem;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    nav h2 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 1.2rem 0 0.5rem; }
+    nav h2:first-child { margin-top: 0; }
+    nav a { display: block; padding: 0.4rem 0.6rem; border-radius: 6px; color: var(--text); font-size: 0.9rem; }
+    nav a:hover { background: var(--surface2); text-decoration: none; }
+    main { flex: 1; padding: 2rem 2.5rem 4rem; max-width: 960px; }
+    .hero {
+      background: linear-gradient(135deg, #1e3a5f 0%, #312e81 50%, #1e293b 100%);
+      border-radius: 16px;
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+      border: 1px solid var(--border);
+    }
+    .hero h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    .hero p { color: #cbd5e1; max-width: 640px; }
+    .badge { display: inline-block; background: rgba(56,189,248,0.2); color: var(--accent); padding: 0.2rem 0.7rem; border-radius: 999px; font-size: 0.8rem; margin-bottom: 1rem; }
+    section { margin-bottom: 2.5rem; scroll-margin-top: 1rem; }
+    section h2 { font-size: 1.5rem; margin-bottom: 1rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--accent2); }
+    section h3 { font-size: 1.1rem; margin: 1.2rem 0 0.6rem; color: var(--accent); }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; margin-top: 1rem; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .card h4 { margin-bottom: 0.4rem; font-size: 1rem; }
+    .card p { font-size: 0.88rem; color: var(--muted); margin-bottom: 0.6rem; }
+    .card .tag { font-size: 0.75rem; background: var(--surface2); padding: 0.15rem 0.5rem; border-radius: 4px; color: var(--muted); }
+    .loop-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      margin: 1rem 0;
+    }
+    .loop-steps { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.5rem; }
+    .step {
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .arrow { color: var(--muted); font-size: 1.2rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+    th, td { border: 1px solid var(--border); padding: 0.6rem 0.8rem; text-align: left; }
+    th { background: var(--surface2); color: var(--accent); }
+    tr:nth-child(even) { background: rgba(30,41,59,0.5); }
+    .glossary dt { font-weight: 600; color: var(--accent); margin-top: 0.8rem; }
+    .glossary dd { color: var(--muted); margin-left: 0; padding-left: 1rem; border-left: 2px solid var(--border); }
+    .path-step {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      align-items: flex-start;
+    }
+    .path-num {
+      background: var(--accent2);
+      color: white;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; flex-shrink: 0;
+    }
+    .img-wrap { text-align: center; margin: 1.2rem 0; }
+    .img-wrap img { max-width: 100%; border-radius: 10px; border: 1px solid var(--border); }
+    .img-wrap figcaption { font-size: 0.85rem; color: var(--muted); margin-top: 0.5rem; }
+    .ext-link::after { content: " ↗"; font-size: 0.8em; }
+    .doc-link {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--green); color: #064e3b;
+      padding: 0.6rem 1.2rem; border-radius: 8px;
+      font-weight: 600; margin-top: 1rem;
+    }
+    .doc-link:hover { background: #6ee7b7; text-decoration: none; color: #064e3b; }
+    @media (max-width: 768px) {
+      .layout { flex-direction: column; }
+      nav { width: 100%; height: auto; position: relative; }
+      main { padding: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav>
+      <h2>Explore</h2>
+      <a href="#overview">Overview</a>
+      <a href="#loop">Agent Loop</a>
+      <a href="#concepts">Key Concepts</a>
+      <a href="#paradigms">Paradigms</a>
+      <a href="#frameworks">Frameworks</a>
+      <a href="#benchmarks">Benchmarks</a>
+      <h2>Learn</h2>
+      <a href="#papers">Must-Read Papers</a>
+      <a href="#surveys">Survey Papers</a>
+      <a href="#path">Learning Path</a>
+      <a href="#glossary">Glossary</a>
+      <h2>Resources</h2>
+      <a href="#tools">Tools &amp; Protocols</a>
+      <a href="#paper">Your IEEE Paper</a>
+    </nav>
+
+    <main>
+      <div class="hero" id="overview">
+        <span class="badge">Interactive Learning Guide</span>
+        <h1>Agentic Artificial Intelligence</h1>
+        <p>
+          Agentic AI extends large language models with <strong>autonomy</strong> — the ability to
+          perceive, reason, plan, use tools, and act over multiple steps to achieve goals.
+          This page is your companion to the IEEE literature review in <code>ai.docx</code>.
+        </p>
+        <a class="doc-link" href="ai.docx">📄 Open ai.docx (IEEE Paper)</a>
+      </div>
+
+      <section id="loop">
+        <h2>The Agent Control Loop</h2>
+        <p>Every agentic system follows a closed-loop cycle. Understanding this loop is the foundation for reading any paper or framework.</p>
+        <div class="loop-diagram">
+          <div class="loop-steps">
+            <span class="step">1. Perceive</span><span class="arrow">→</span>
+            <span class="step">2. Reason</span><span class="arrow">→</span>
+            <span class="step">3. Plan</span><span class="arrow">→</span>
+            <span class="step">4. Act (Tool)</span><span class="arrow">→</span>
+            <span class="step">5. Observe</span><span class="arrow">→</span>
+            <span class="step">6. Reflect</span>
+          </div>
+          <p style="margin-top:1rem;color:var(--muted);font-size:0.9rem;">Repeat until goal achieved or max steps reached</p>
+        </div>
+        <figure class="img-wrap">
+          <img src="charts/agentic_taxonomy.png" alt="Agentic AI taxonomy diagram" width="600">
+          <figcaption>Taxonomy: Reasoning, Acting, and Interacting capabilities</figcaption>
+        </figure>
+      </section>
+
+      <section id="concepts">
+        <h2>Key Concepts</h2>
+        <div class="card-grid">
+          <div class="card">
+            <h4>LLM as Controller</h4>
+            <p>The language model serves as the "brain" — deciding what to do next based on context and observations.</p>
+            <span class="tag">Core</span>
+          </div>
+          <div class="card">
+            <h4>Tool Use</h4>
+            <p>Agents call APIs, run code, search the web, or query databases. Tools extend what the LLM can do beyond text.</p>
+            <span class="tag">Acting</span>
+          </div>
+          <div class="card">
+            <h4>Memory</h4>
+            <p>Short-term (conversation context) and long-term (vector stores, knowledge graphs) memory enable multi-session tasks.</p>
+            <span class="tag">Reasoning</span>
+          </div>
+          <div class="card">
+            <h4>Planning</h4>
+            <p>Goal decomposition breaks complex tasks into sub-tasks. Hierarchical planners manage long-horizon objectives.</p>
+            <span class="tag">Reasoning</span>
+          </div>
+          <div class="card">
+            <h4>Reflection</h4>
+            <p>Agents evaluate their own outputs and revise strategy — Reflexion and Self-Refine are key paradigms.</p>
+            <span class="tag">Reasoning</span>
+          </div>
+          <div class="card">
+            <h4>Multi-Agent</h4>
+            <p>Multiple specialized agents collaborate — planner, coder, critic roles in frameworks like AutoGen and CrewAI.</p>
+            <span class="tag">Interacting</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="paradigms">
+        <h2>Foundational Paradigms</h2>
+        <table>
+          <thead><tr><th>Paradigm</th><th>Year</th><th>Key Idea</th><th>Paper</th></tr></thead>
+          <tbody>
+            <tr><td><strong>ReAct</strong></td><td>2022</td><td>Interleave reasoning traces with actions</td><td><a class="ext-link" href="https://arxiv.org/abs/2210.03629" target="_blank">arXiv:2210.03629</a></td></tr>
+            <tr><td><strong>Toolformer</strong></td><td>2023</td><td>Self-supervised tool learning</td><td><a class="ext-link" href="https://arxiv.org/abs/2302.04761" target="_blank">arXiv:2302.04761</a></td></tr>
+            <tr><td><strong>Reflexion</strong></td><td>2023</td><td>Verbal reinforcement from failures</td><td><a class="ext-link" href="https://arxiv.org/abs/2303.11366" target="_blank">arXiv:2303.11366</a></td></tr>
+            <tr><td><strong>AutoGPT</strong></td><td>2023</td><td>Fully autonomous goal-driven loops</td><td><a class="ext-link" href="https://github.com/Significant-Gravitas/AutoGPT" target="_blank">GitHub</a></td></tr>
+            <tr><td><strong>Chain-of-Thought</strong></td><td>2022</td><td>Step-by-step reasoning (precursor)</td><td><a class="ext-link" href="https://arxiv.org/abs/2201.11903" target="_blank">arXiv:2201.11903</a></td></tr>
+          </tbody>
+        </table>
+        <figure class="img-wrap">
+          <img src="charts/agentic_timeline.png" alt="Agentic AI timeline" width="600">
+          <figcaption>Timeline of major milestones (2022–2025)</figcaption>
+        </figure>
+      </section>
+
+      <section id="frameworks">
+        <h2>Frameworks &amp; Libraries</h2>
+        <div class="card-grid">
+          <div class="card">
+            <h4>LangGraph</h4>
+            <p>State-graph orchestration for controllable agent workflows. Production-focused.</p>
+            <a class="ext-link" href="https://langchain-ai.github.io/langgraph/" target="_blank">Documentation</a>
+          </div>
+          <div class="card">
+            <h4>AutoGen (Microsoft)</h4>
+            <p>Multi-agent conversation framework with flexible agent roles.</p>
+            <a class="ext-link" href="https://microsoft.github.io/autogen/" target="_blank">Documentation</a>
+          </div>
+          <div class="card">
+            <h4>CrewAI</h4>
+            <p>Role-based multi-agent teams for collaborative task execution.</p>
+            <a class="ext-link" href="https://docs.crewai.com/" target="_blank">Documentation</a>
+          </div>
+          <div class="card">
+            <h4>MetaGPT</h4>
+            <p>Software company simulation — PM, architect, engineer agents.</p>
+            <a class="ext-link" href="https://github.com/geekan/MetaGPT" target="_blank">GitHub</a>
+          </div>
+          <div class="card">
+            <h4>CAMEL</h4>
+            <p>Communicative agents with role-playing for task solving.</p>
+            <a class="ext-link" href="https://github.com/camel-ai/camel" target="_blank">GitHub</a>
+          </div>
+          <div class="card">
+            <h4>smolagents (HuggingFace)</h4>
+            <p>Lightweight agents with code-as-action paradigm.</p>
+            <a class="ext-link" href="https://huggingface.co/docs/smolagents" target="_blank">Documentation</a>
+          </div>
+        </div>
+      </section>
+
+      <section id="benchmarks">
+        <h2>Evaluation Benchmarks</h2>
+        <table>
+          <thead><tr><th>Benchmark</th><th>What It Tests</th><th>Link</th></tr></thead>
+          <tbody>
+            <tr><td>AgentBench</td><td>LLMs as agents across 8 environments</td><td><a class="ext-link" href="https://arxiv.org/abs/2308.03688" target="_blank">Paper</a></td></tr>
+            <tr><td>GAIA</td><td>General AI assistants — tool use + reasoning</td><td><a class="ext-link" href="https://arxiv.org/abs/2311.12983" target="_blank">Paper</a></td></tr>
+            <tr><td>SWE-bench</td><td>Real GitHub issue resolution</td><td><a class="ext-link" href="https://www.swebench.com/" target="_blank">Website</a></td></tr>
+            <tr><td>τ-bench</td><td>Tool-agent-user interaction</td><td><a class="ext-link" href="https://arxiv.org/abs/2410.24185" target="_blank">Paper</a></td></tr>
+            <tr><td>WebArena</td><td>Web browsing agents</td><td><a class="ext-link" href="https://webarena.dev/" target="_blank">Website</a></td></tr>
+            <tr><td>Agent-SafetyBench</td><td>Safety of LLM agents</td><td><a class="ext-link" href="https://arxiv.org/abs/2412.13178" target="_blank">Paper</a></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="papers">
+        <h2>Must-Read Foundational Papers</h2>
+        <p>Start with these five papers to build intuition before diving into surveys.</p>
+        <ol style="margin-left:1.2rem;color:var(--muted);">
+          <li style="margin-bottom:0.6rem;"><a class="ext-link" href="https://arxiv.org/abs/2210.03629" target="_blank"><strong>ReAct</strong></a> — Yao et al., 2022. The paper that defined the think→act→observe loop.</li>
+          <li style="margin-bottom:0.6rem;"><a class="ext-link" href="https://arxiv.org/abs/2302.04761" target="_blank"><strong>Toolformer</strong></a> — Schick et al., 2023. Language models teaching themselves to use tools.</li>
+          <li style="margin-bottom:0.6rem;"><a class="ext-link" href="https://arxiv.org/abs/2303.11366" target="_blank"><strong>Reflexion</strong></a> — Shinn et al., 2023. Verbal reinforcement learning for agents.</li>
+          <li style="margin-bottom:0.6rem;"><a class="ext-link" href="https://arxiv.org/abs/2308.03688" target="_blank"><strong>AgentBench</strong></a> — Liu et al., 2024. How to evaluate LLMs as agents.</li>
+          <li style="margin-bottom:0.6rem;"><a class="ext-link" href="https://arxiv.org/abs/2311.12983" target="_blank"><strong>GAIA</strong></a> — Mialon et al., 2024. Benchmark for general AI assistants.</li>
+        </ol>
+      </section>
+
+      <section id="surveys">
+        <h2>Comprehensive Survey Papers</h2>
+        <div class="card-grid">
+          <div class="card">
+            <h4>LLM-Based Autonomous Agents</h4>
+            <p>Wang et al. — Unified framework, applications, evaluation. Frontiers of CS, 2024.</p>
+            <a class="ext-link" href="https://arxiv.org/abs/2308.11432" target="_blank">arXiv:2308.11432</a>
+          </div>
+          <div class="card">
+            <h4>Agentic LLMs Survey</h4>
+            <p>Xi et al. — Reasoning, acting, interacting taxonomy. 2025.</p>
+            <a class="ext-link" href="https://arxiv.org/abs/2503.23037" target="_blank">arXiv:2503.23037</a>
+          </div>
+          <div class="card">
+            <h4>Agentic AI — IEEE Access</h4>
+            <p>Pati — Technologies, applications, societal implications. IEEE Access, 2025.</p>
+            <a class="ext-link" href="https://ieeexplore.ieee.org/document/10882918" target="_blank">IEEE Xplore</a>
+          </div>
+          <div class="card">
+            <h4>Architectures &amp; Taxonomies</h4>
+            <p>Guo et al. — POMDP control loop, multi-agent frameworks. 2026.</p>
+            <a class="ext-link" href="https://arxiv.org/abs/2601.12560" target="_blank">arXiv:2601.12560</a>
+          </div>
+          <div class="card">
+            <h4>LLM Reasoning → Agents</h4>
+            <p>Wang et al. — Benchmarks, frameworks, protocols (MCP, A2A). 2025.</p>
+            <a class="ext-link" href="https://arxiv.org/abs/2504.19678" target="_blank">arXiv:2504.19678</a>
+          </div>
+          <div class="card">
+            <h4>Agentic AI: Age of Reasoning</h4>
+            <p>ScienceDirect review — Patterns, types, environments. 2025.</p>
+            <a class="ext-link" href="https://www.sciencedirect.com/science/article/pii/S2949855425000516" target="_blank">ScienceDirect</a>
+          </div>
+        </div>
+      </section>
+
+      <section id="path">
+        <h2>Recommended Learning Path</h2>
+        <div class="path-step"><div class="path-num">1</div><div><strong>Understand LLMs basics</strong><br><span style="color:var(--muted)">Read about GPT, prompting, chain-of-thought. Know what an LLM can and cannot do natively.</span></div></div>
+        <div class="path-step"><div class="path-num">2</div><div><strong>Study the ReAct paper</strong><br><span style="color:var(--muted)">This is the conceptual foundation. Understand the interleaved thought-action-observation loop.</span></div></div>
+        <div class="path-step"><div class="path-num">3</div><div><strong>Build a simple agent</strong><br><span style="color:var(--muted)">Use LangChain or smolagents to create a tool-calling agent. Experience the loop firsthand.</span></div></div>
+        <div class="path-step"><div class="path-num">4</div><div><strong>Read Wang et al. survey</strong><br><span style="color:var(--muted)">Get the big picture: construction, applications, evaluation strategies.</span></div></div>
+        <div class="path-step"><div class="path-num">5</div><div><strong>Explore multi-agent systems</strong><br><span style="color:var(--muted)">Try AutoGen or CrewAI. Read Chen et al. multi-agent survey (IJCAI 2024).</span></div></div>
+        <div class="path-step"><div class="path-num">6</div><div><strong>Study evaluation</strong><br><span style="color:var(--muted)">Run AgentBench or GAIA examples. Understand why model-centric eval is insufficient.</span></div></div>
+        <div class="path-step"><div class="path-num">7</div><div><strong>Read your IEEE paper</strong><br><span style="color:var(--muted)">Synthesize everything with the literature review in <a href="ai.docx">ai.docx</a>.</span></div></div>
+      </section>
+
+      <section id="glossary">
+        <h2>Glossary</h2>
+        <dl class="glossary">
+          <dt>Agentic AI</dt>
+          <dd>AI systems that autonomously pursue goals through perception, reasoning, planning, and action over multiple steps.</dd>
+          <dt>ReAct</dt>
+          <dd>Reasoning + Acting paradigm that interleaves chain-of-thought with tool/environment interactions.</dd>
+          <dt>RAG</dt>
+          <dd>Retrieval-Augmented Generation — fetching external documents to ground LLM responses.</dd>
+          <dt>MCP</dt>
+          <dd>Model Context Protocol — open standard for connecting LLMs to tools and data sources.</dd>
+          <dt>POMDP</dt>
+          <dd>Partially Observable Markov Decision Process — formal framework for agent-environment interaction.</dd>
+          <dt>Scaffold</dt>
+          <dd>The fixed agent architecture (e.g., ReAct loop) used during evaluation to isolate model capability.</dd>
+          <dt>Tool Calling</dt>
+          <dd>LLM outputting structured function calls that an runtime executes and returns results for.</dd>
+          <dt>Hallucination</dt>
+          <dd>LLM generating plausible but incorrect information — amplified when agents act on false beliefs.</dd>
+        </dl>
+      </section>
+
+      <section id="tools">
+        <h2>Tools, Protocols &amp; Repositories</h2>
+        <ul style="margin-left:1.2rem;color:var(--muted);">
+          <li><a class="ext-link" href="https://modelcontextprotocol.io" target="_blank">Model Context Protocol (MCP)</a> — Tool connectivity standard</li>
+          <li><a class="ext-link" href="https://github.com/Paitesanshi/LLM-Agent-Survey" target="_blank">LLM-Agent-Survey</a> — Curated paper repository (Wang et al.)</li>
+          <li><a class="ext-link" href="https://github.com/parameterlab/MASEval" target="_blank">MASEval</a> — Multi-agent system evaluation framework</li>
+          <li><a class="ext-link" href="https://aiindex.stanford.edu/" target="_blank">Stanford AI Index 2025</a> — Annual AI trends report</li>
+          <li><a class="ext-link" href="https://www.deeplearning.ai/short-courses/ai-agents-in-langgraph/" target="_blank">DeepLearning.AI — AI Agents in LangGraph</a> — Free short course</li>
+          <li><a class="ext-link" href="https://huggingface.co/learn/agents-course" target="_blank">HuggingFace Agents Course</a> — Hands-on agent development</li>
+        </ul>
+      </section>
+
+      <section id="paper">
+        <h2>Your IEEE Literature Review</h2>
+        <p>The companion document <strong>ai.docx</strong> in this folder contains a full IEEE-formatted literature review covering all topics on this page in academic prose with 29 references, tables, and figures.</p>
+        <a class="doc-link" href="ai.docx">📄 Open ai.docx</a>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

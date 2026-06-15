@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+.env
+.env.*
+*.log
+.DS_Store
+Thumbs.db
+~$*
+.cursor/nature-skills-src/
+.cursor/nature-skills.zip
